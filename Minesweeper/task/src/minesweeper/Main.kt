@@ -12,7 +12,6 @@ class Miner(val cells: Int) {
     val flagCell = "*"          // установленный флаг (возможно мина)
     val emptyCell = "/"         // исследованная - пустая ячейка
     val workCell = "#"          // рабочая ячейка для повторного исследования
-//    val explosionCell = "!"     // взрыв в ячейке
 
     /**
      * Инициализация массива рабочей области (минного поля)
@@ -60,7 +59,7 @@ class Miner(val cells: Int) {
     /**
      *  Попытка найти место для одной мины
      */
-    fun instalMine(){
+    fun instalMine() {
         var doIt = true
         while (doIt && isEmptyCells()) {
             val r = Random.nextInt(1, rows+1)
@@ -73,9 +72,7 @@ class Miner(val cells: Int) {
      *  Установка определенного кол-ва мин random
      */
     fun initMines(mines: Int) {
-        for (i in 1..mines) {
-            instalMine()
-        }
+        for (i in 1..mines) instalMine()
     }
 
     /**
@@ -110,7 +107,7 @@ class Miner(val cells: Int) {
     }
 
     /**
-     * Тестирование всего поля на отсутвие мины
+     * Проверка всего поля на отсутвие мины
      */
     fun testEmpty() {
         var isWork = true
@@ -128,14 +125,12 @@ class Miner(val cells: Int) {
     }
 
     /**
-     * Тестирование ячейки на отсутвие мины
+     * Проверка ячейки на отсутвие мины
      */
     fun testEmptyCell(row: Int, col: Int): Boolean {
         val ie = isEmpty(row, col)
-        if (!ie) {
-//            fieldMapMin[row][col] = explosionCell
-            return false
-        }
+        if (!ie) return false
+
         val around = viewAround(row, col)
         if (ie && (around != 0)) fieldMap[row][col] = around.toString()
         else if (around == 0) {
@@ -166,7 +161,7 @@ class Miner(val cells: Int) {
     }
 
     /**
-     * Ход минера и проверка
+     * Ход сапёра и проверка
      */
     fun setCoordinates(): Int {
         print("Set/unset mines marks or claim a cell as free: ")
@@ -194,10 +189,6 @@ class Miner(val cells: Int) {
     fun checkFlags(): Int {
         fieldMapMin.forEachIndexed { row, r ->
             r.forEachIndexed { col, c ->
-//                if (c == explosionCell) {
-//                    fieldMapMin[row][col] = miningCell
-//                    return 2
-//                }
                 if (!isEmpty(row, col) && !isTypeCell(row, col, flagCell)) return 1
             }
         }
@@ -205,7 +196,7 @@ class Miner(val cells: Int) {
     }
 
     /**
-     * Раскрытие всех мин
+     * Раскрытие всех мин, удаление флагов - при взрыве и проигрыше
      */
     fun viewAllMine() {
         fieldMap.forEachIndexed { row, r ->
@@ -234,13 +225,12 @@ fun getInt(str: String): Int {
 fun main(args: Array<String>) {
     val cells = 9
     var out: Int
-    var toIt = true
     var checkGame: Int
     val mines = getInt("How many mines do you want on the field? ")
     val mm = Miner(cells) // Инициализация экземпляра класса с заданной шириной поля
     mm.initMines(mines)
     println(mm)
-    while (toIt) { // Цикл получения координат - ожидание хода, проверка результатов
+    while (true) { // Цикл получения координат - ожидание хода, проверка результатов
         out = mm.setCoordinates() // Запрашиваем ход игрока, устанавливаем ход на доску
         when (out) {
             0 -> {
